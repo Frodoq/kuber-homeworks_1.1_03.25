@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: example-ingress # ЗАДАНИЕ: Придумайте имя, допустим example-ingress
+  annotations:  # ВАЖНО: Эта аннотация нужна для rewrite правил
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+  - host: example.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: frontend-service # УКАЖИТЕ: Имя frontend Service
+            port:
+              number: 80
+      - path: /api # КЛЮЧЕВОЙ ПУТЬ: API endpoint
+        pathType: Prefix
+        backend:
+          service:
+            name: backend-service # УКАЖИТЕ: Имя backend Service
+            port:
+              number: 80

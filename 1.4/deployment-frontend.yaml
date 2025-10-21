@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend # ПРИМЕР: "frontend"
+spec:
+  replicas: 2 # ЗАДАНИЕ: Укажите количество реплик
+  selector:
+    matchLabels:
+      app: frontend # ДОПОЛНИТЕ: Метка для селектора
+  template:
+    metadata:
+      labels:
+        app: frontend # ПОВТОРИТЕ метку из selector.matchLabels
+    spec:
+      containers:
+      - name: nginx # ЗАДАНИЕ: Название контейнера
+        image: nginx
+        ports:
+        - containerPort: 80

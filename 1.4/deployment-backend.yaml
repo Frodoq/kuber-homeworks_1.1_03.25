@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend # ПРИМЕР: "backend"
+spec:
+  replicas: 2 # ЗАДАНИЕ: Укажите количество реплик
+  selector:
+    matchLabels:
+      app: backend # ДОПОЛНИТЕ: Метка для селектора
+  template:
+    metadata:
+      labels:
+        app: backend # ПОВТОРИТЕ метку из selector.matchLabels
+    spec:
+      containers:
+      - name: multitool # ЗАДАНИЕ: Название контейнера
+        image: wbitt/network-multitool
+        ports:
+        - containerPort: 8080
+        env:
+        - name: HTTP_PORT
+          value: "8080" # КЛЮЧЕВОЙ МОМЕНТ: Порт должен совпадать с containerPort
