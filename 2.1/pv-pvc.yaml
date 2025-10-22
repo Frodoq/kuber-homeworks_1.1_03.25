@@ -1,0 +1,61 @@
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: local-pv # ДОПОЛНИТЕ: Имя хранилища
+spec:
+  capacity:
+    storage: 1Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  hostPath:
+    path: /mnt/local-storage # КЛЮЧЕВОЕ: Путь к директории на ноде (хосте, на котором развёрнут кластер)
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: local-pvc # ДОПОЛНИТЕ: Имя PVC
+spec:
+  volumeName: local-pv # ДОПОЛНИТЕ: Имя PV, к которому будет привязан PVC, должен совпадать с созданным ранее PV
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi # ДОПОЛНИТЕ: Какой объём хранилища вы хотите передать в контейнер. Должно быть меньше или равно параметру storage из PV
+  storageClassName: "" # Явно указываем пустой storageClass
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: data-exchange-pvc
+spec:
+  replicas: 1 # ЗАДАНИЕ: Укажите количество реплик
+  selector:
+    matchLabels:
+      app: data-exchange-pvc # ДОПОЛНИТЕ: Метка для селектора
+  template:
+    metadata:
+      labels:
+        app: data-exchange-pvc # ПОВТОРИТЕ: Метка из selector.matchLabels
+    spec:
+      containers:
+      - name: writer # ДОПОЛНИТЕ: Имя первого контейнера
+        image: busybox
+        command: ["/bin/sh", "-c"] 
+        args: ["while true; do echo $(date) >> /mnt/data/data.txt; sleep 5; done"] # КЛЮЧЕВОЕ: Команда записи данных в файл в директории из секции volumeMounts контейнера 
+        volumeMounts:
+        - name: local-storage # ДОПОЛНИТЕ: Имя монтируемого раздела. Должно совпадать с именем хранилища, объявленного на уровне пода
+          mountPath: /mnt/data # КЛЮЧЕВОЕ: Путь монтирования хранилища внутри контейнера 1
+      - name: reader # ДОПОЛНИТЕ: Имя второго контейнера
+        image: wbitt/network-multitool
+        command: ["/bin/sh", "-c"]
+        args: ["tail -f /mnt/data/data.txt"] # КЛЮЧЕВОЕ: Команда для чтения данных из файла, расположенного в директории, указанной в volumeMounts контейнера
+        volumeMounts:
+        - name: local-storage # ДОПОЛНИТЕ: Имя монтируемого раздела. Должно совпадать с именем хранилища, объявленного на уровне пода
+          mountPath: /mnt/data # КЛЮЧЕВОЕ: Путь монтирования хранилища внутри контейнера 2
+      volumes:
+      - name: local-storage # ДОПОЛНИТЕ: Имя монтируемого раздела хранилища
+        persistentVolumeClaim:
+          claimName: local-pvc # КЛЮЧЕВОЕ: Совпадает с именем PVC объявленного ранее
