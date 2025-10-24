@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: web-app
+  template:
+    metadata:
+      labels:
+        app: web-app
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.23-alpine  # Используем более стабильную версию
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: nginx-config # ПОДКЛЮЧЕНИЕ ConfigMap
+          mountPath: /etc/nginx/conf.d
+        - name: web-content
+          mountPath: /usr/share/nginx/html
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "50m"
+          limits:
+            memory: "128Mi"
+            cpu: "100m"
+      - name: multitool
+        image: wbitt/network-multitool:latest
+        ports:
+        - containerPort: 8080  # Изменяем порт для избежания конфликта
+        command: ['sh', '-c', 'echo "Multitool is ready" && sleep infinity']
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "50m"
+          limits:
+            memory: "128Mi"
+            cpu: "100m"
+      volumes:
+      - name: nginx-config
+        configMap:
+          name: nginx-config # УКАЖИТЕ имя созданного ConfigMap
+      - name: web-content
+        configMap:
+          name: web-content

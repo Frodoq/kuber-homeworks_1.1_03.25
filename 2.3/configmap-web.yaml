@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: web-content # ИЗМЕНИТЕ: Укажите имя ConfigMap
+  namespace: default # ОПЦИОНАЛЬНО: Укажите namespace, если не default
+data:
+  # КЛЮЧЕВОЙ МОМЕНТ: index.html будет подключен как файл
+  index.html: |
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>Страница из ConfigMap</title> # ИЗМЕНИТЕ: Заголовок страницы
+    </head>
+    <body>
+      <h1>Привет от Kubernetes!</h1> # ДОБАВЬТЕ: Свой контент страницы
+    </body>
+    </html>
