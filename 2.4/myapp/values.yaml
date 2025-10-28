@@ -1,0 +1,12 @@
+appName: myapp
+replicaCount: 1
+
+image:
+  repository: nginx
+  tag: "1.25"
+
+service:
+  type: ClusterIP
+  port: 80
+
+namespace: default
