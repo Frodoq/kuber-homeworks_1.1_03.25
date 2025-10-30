@@ -1,0 +1,44 @@
+---
+kubernetes_version: v1.28.0
+container_manager: containerd
+kube_proxy_mode: iptables
+kube_pods_subnet: 10.233.64.0/18
+kube_service_addresses: 10.233.0.0/18
+
+etcd_deployment_type: host
+
+# Network plugin
+kube_network_plugin: calico
+calico_ipip_mode: Always
+calico_vxlan_mode: Never
+calico_network_backend: bird
+
+# DNS
+resolvconf_mode: host_resolvconf
+
+# Feature gates
+feature_gates:
+  RotateKubeletServerCertificate: true
+
+# Audit
+kubernetes_audit: true
+
+# RBAC
+rbac_enabled: true
+
+# Cloud provider
+cloud_provider: external
+
+# Container runtime
+containerd_registries:
+  "docker.io":
+    - "https://registry-1.docker.io"
+
+# Kubernetes components
+kube_controller_manager_node_monitor_period: 2s
+kube_controller_manager_node_monitor_grace_period: 16s
+kube_controller_manager_pod_eviction_timeout: 30s
+
+# System
+override_system_hostname: false
+enable_nodelocaldns: false
